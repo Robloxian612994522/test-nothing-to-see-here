@@ -286,3 +286,5 @@ if game.Workspace:FindFirstChild(game.Players.LocalPlayer.Character):GetAttribut
     wait(0.4)
     VU:SetKeyUp("0x11")
 end
+
+Library:Notify("Successfully loaded also hi alex :D", 4.5)
