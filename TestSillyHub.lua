@@ -10,6 +10,63 @@ local HardModeActive = false
 local AUS = false
 local AntiGiggleVar = false
 local AutoReviveVar = false
+local function Jeff()
+    local Creator = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Doors%20Entity%20Spawner/Source.lua"))()
+
+    local entity = Creator.createEntity({
+    CustomName = "Jeff", -- Custom name of your entity
+    Model = 12981508700,
+    Speed = 100, -- Percentage, 100 = default Rush speed
+    DelayTime = 3, -- Time before starting cycles (seconds)
+    HeightOffset = 0,
+    CanKill = true,
+    BreakLights = true,
+    FlickerLights = {
+        true, -- Enabled
+        5, -- Time (seconds)
+    },
+    Cycles = {
+        Min = 1,
+        Max = 2,
+        WaitTime = 3,
+    },
+    CamShake = {
+        true, -- Enabled
+        {5, 15, 0.1, 1}, -- Shake values (don't change if you don't know)
+        1, -- Shake start distance (from Entity to you)
+    },
+    Jumpscare = {
+        true, -- Enabled ('false' if you don't want jumpscare)
+        {
+            Image1 = "https://www.roblox.com/library/11401298618/bacon-but-not-as-mad", -- Image1 url
+            Image2 = "https://www.roblox.com/library/11401297072/Bacon", -- Image2 url
+            Shake = true,
+            Sound1 = { 
+               11400679305, -- SoundId
+                { Volume = 1 }, -- Sound properties
+            },
+            Sound2 = {
+                10483837590, -- SoundId
+                { Volume = 0 }, -- Sound properties
+            },
+            Flashing = {
+                false, -- Enabled
+                Color3.fromRGB(70, 25, 0), -- Color
+            },
+            Tease = {
+                false, -- Enabled ('false' if you don't want tease)
+                Min = 1,
+                Max = 1,
+            },
+        },
+    },
+})
+
+------------------------
+
+-- Run the created entity
+Creator.runEntity(entity)
+end
 
 -- Library
 local Library = loadstring(game:HttpGet(Repository .. "Library.lua"))()
@@ -250,12 +307,7 @@ Modes:AddButton("Mega Hard Mode", function()
         Library:Notify("and its harder than Super Hard mode considered a impossible challenge click again if your sure you wanna play", 4.5)
     else
         if HardModeActive == false and game.ReplicatedStorage.GameData.LatestRoom.Value == 0 then
-            Library:Notify("loaded lets see if you beat it and your hacks are still active by the way", 4.5)
-            wait(2)
-            Library:Notify("this cannot be undo (pro tip: dont use gamble button or you dead)", 4.5)
-            HardModeActive = true
-            HealthDrain()
-            PromptSlowRepeater()
+            Jeff()
         end
     end
 end)
