@@ -269,11 +269,4 @@ game.Players.LocalPlayer.Character.Humanoid.Died:Connect(function()
     end
 end)
 
-if game.Workspace:FindFirstChild(game.Players.LocalPlayer.Character):GetAttribute("Hiding") == true then
-    wait(1.9)
-    VU:SetKeyDown("0x11")
-    wait(0.4)
-    VU:SetKeyUp("0x11")
-end
-
 Library:Notify("Successfully loaded also hi alex :D", 4.5)
