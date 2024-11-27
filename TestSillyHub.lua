@@ -4,69 +4,13 @@ local Repository = "https://raw.githubusercontent.com/RectangularObject/LinoriaL
 -- Services
 local VU = game:GetService("VirtualUser")
 local UIS = game:GetService("UserInputService")
+local Pathfinding = game:GetService("PathfindingService")
 
 -- Variable
 local HardModeActive = false
 local AUS = false
 local AntiGiggleVar = false
 local AutoReviveVar = false
-local function Jeff()
-    local Creator = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Doors%20Entity%20Spawner/Source.lua"))()
-
-    local entity = Creator.createEntity({
-    CustomName = "Jeff", -- Custom name of your entity
-    Model = 12981508700,
-    Speed = 100, -- Percentage, 100 = default Rush speed
-    DelayTime = 3, -- Time before starting cycles (seconds)
-    HeightOffset = 0,
-    CanKill = true,
-    BreakLights = true,
-    FlickerLights = {
-        true, -- Enabled
-        5, -- Time (seconds)
-    },
-    Cycles = {
-        Min = 1,
-        Max = 2,
-        WaitTime = 3,
-    },
-    CamShake = {
-        true, -- Enabled
-        {5, 15, 0.1, 1}, -- Shake values (don't change if you don't know)
-        1, -- Shake start distance (from Entity to you)
-    },
-    Jumpscare = {
-        true, -- Enabled ('false' if you don't want jumpscare)
-        {
-            Image1 = "https://www.roblox.com/library/11401298618/bacon-but-not-as-mad", -- Image1 url
-            Image2 = "https://www.roblox.com/library/11401297072/Bacon", -- Image2 url
-            Shake = true,
-            Sound1 = { 
-               11400679305, -- SoundId
-                { Volume = 1 }, -- Sound properties
-            },
-            Sound2 = {
-                10483837590, -- SoundId
-                { Volume = 0 }, -- Sound properties
-            },
-            Flashing = {
-                false, -- Enabled
-                Color3.fromRGB(70, 25, 0), -- Color
-            },
-            Tease = {
-                false, -- Enabled ('false' if you don't want tease)
-                Min = 1,
-                Max = 1,
-            },
-        },
-    },
-})
-
-------------------------
-
--- Run the created entity
-Creator.runEntity(entity)
-end
 
 -- Library
 local Library = loadstring(game:HttpGet(Repository .. "Library.lua"))()
@@ -77,6 +21,42 @@ local TweenService = game:GetService("TweenService")
 game.Workspace:FindFirstChild(game.Players.LocalPlayer.Character):SetAttribute("Hiding", false)
 
 -- Functions
+
+local function JeffControl(TheJeff)
+    TheJeff.HumanoidRootPart.Touched:Connect(function(Part)
+        if Part.Parent.Name == game.Players.LocalPlayer.Character.Name then
+            game.Players.LocalPlayer.Character.Humanoid:TakeDamage(30)
+        end
+    end)
+end
+
+local function JeffWalk(JeffThing)
+    while true do
+        wait(0.1)
+        local path = Pathfinding:CreatePath()
+    
+        -- Calculate the destination (player's current position)
+        path:ComputeAsync(JeffThing.HumanoidRootPart.Position, game.Players.LocalPlayer.Character.HumanoidRootPart.Position)
+        
+        -- Move the NPC along the path
+        local waypoint = path:GetWaypoints()
+    
+        for _,v in pairs(waypoint) do
+            JeffThing.Zombie:MoveTo(v.Position)
+        end
+        
+    end
+end
+
+local function Jeff()
+    local Jeff = game:GetObjects("rbxassetid://12981508700")[1]
+
+    Jeff.Parent = game.Workspace
+    Jeff.HumanoidRootPart.CFrame = CFrame.new(game.Workspace.CurrentRooms:FindFirstChild(tostring(game.ReplicatedStorage.GameData.LatestRoom.Value)).Door.Collision.Position)
+    JeffControl(Jeff)
+    JeffWalk(Jeff)
+end
+
 local function FullBright()
     while true do
         wait(0.4)
@@ -271,7 +251,7 @@ ExploitSelf:AddSlider("Speed", {
 	Text = "Speed",
 	Default = 0,
 	Min = 1,
-	Max = 100,
+	Max = 6,
 	Rounding = 1,
 	Compact = false,
 
@@ -307,7 +287,9 @@ Modes:AddButton("Mega Hard Mode", function()
         Library:Notify("and its harder than Super Hard mode considered a impossible challenge click again if your sure you wanna play", 4.5)
     else
         if HardModeActive == false and game.ReplicatedStorage.GameData.LatestRoom.Value == 0 then
-            Jeff()
+            while true do
+                wait()
+            end
         end
     end
 end)
