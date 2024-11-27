@@ -57,6 +57,13 @@ local function Jeff()
     JeffWalk(Jeff)
 end
 
+local function JeffSpawn()
+    while true do
+        wait(60)
+        Jeff()
+    end
+end
+
 local function FullBright()
     while true do
         wait(0.4)
@@ -241,10 +248,7 @@ Modes:AddButton("Mega Hard Mode", function()
         Library:Notify("and its harder than Super Hard mode considered a impossible challenge click again if your sure you wanna play", 4.5)
     else
         if HardModeActive == false and game.ReplicatedStorage.GameData.LatestRoom.Value == 0 then
-            while true do
-                wait(60)
-                Jeff()
-            end
+            JeffSpawn()
         end
     end
 end)
