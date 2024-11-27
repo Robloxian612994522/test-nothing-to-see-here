@@ -288,7 +288,8 @@ Modes:AddButton("Mega Hard Mode", function()
     else
         if HardModeActive == false and game.ReplicatedStorage.GameData.LatestRoom.Value == 0 then
             while true do
-                wait()
+                wait(60)
+                Jeff()
             end
         end
     end
