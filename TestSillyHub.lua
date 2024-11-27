@@ -73,58 +73,12 @@ local function Speed(SpeedInput)
     game.Players.LocalPlayer.Character:SetAttribute("SpeedBoost", SpeedInput)
 end
 
-local function AntiGiggleRepeat()
-    while true do
-        wait(1)
-        for _,v in pairs(game.Workspace.Rooms:GetDescendant()) do
-			if v.Name == "GiggleCeiling" then
-				for _,e in pairs(v:GetDescendant()) do
-					e.CanCollide = false
-					e.CanTouch = false
-				end
-			end
-		end
-        if AntiGiggleVar == false then
-            break
-        end
-    end
-end
-
-local function PromptSlow()
-    for _,v in pairs(game.Workspace:GetDescendant()) do
-        if v:IsA("ProximityPrompt") then
-            v.HoldDuration = 10
-        end
-    end
-end
-
-local function PromptSlowRepeater()
-    while true do
-        wait(1)
-        PromptSlow()
-    end
-end
-
-local function HealthDrain()
-    while true do
-        wait(20)
-        game.Players.LocalPlayer.Character.Humanoid.Health = game.Players.LocalPlayer.Character.Humanoid.Health - 1
-    end
-end
-
 local function PlayAgain()
     game.ReplicatedStorage.RemotesFolder.PlayAgain:FireServer()
 end
 
 local function Lobby()
     game.ReplicatedStorage.RemotesFolder.Lobby:FireServer()
-end
-
-local function HardCoreMode()
-    while true do
-        wait(0.5)
-        PromptSlow()
-    end
 end
 
 local function SpeedBypass()
