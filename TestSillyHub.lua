@@ -33,7 +33,7 @@ GeneralLeft:AddToggle("Noclip", {
                     e.CanCollide = false
                 end
 
-                for _,e in pairs(v.walls:GetDescendants()) do
+                for _,e in pairs(v.FreeArea:GetDescendants()) do
                     e.CanCollide = false
                 end
             end
@@ -50,7 +50,7 @@ game.Workspace.CurrentRoom.ChildAdded:Connect(function(v)
         end
 
         for _,c in pairs(v.FreeArea:GetDescendants()) do
-        c.CanCollide = false
+           c.CanCollide = false
         end
     end
 end)
