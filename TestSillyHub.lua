@@ -43,6 +43,7 @@ GeneralLeft:AddToggle("Noclip", {
 
 game.Workspace.CurrentRoom.ChildAdded:Connect(function(v)
     if Noclipif == true then
+        Player.Character.HumanoidRootPart.CanCollide = false
         for _,e in pairs(v.Walls:GetDescendants()) do
             if e.Parent == "Wall" then
                 e.CanCollide = false
@@ -54,4 +55,3 @@ game.Workspace.CurrentRoom.ChildAdded:Connect(function(v)
         end
     end
 end)
-
