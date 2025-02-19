@@ -28,6 +28,7 @@ GeneralLeft:AddToggle("Noclip", {
 	Callback = function(Value)
 		Noclipif = Value
         if Value == true then
+            Player.Character.HumanoidRootPart.CanCollide = false
             for _,v in pairs(game.Workspace.CurrrentRoom:GetChildren()) do
                 for _,e in pairs(v.Walls:GetDescendants()) do
                     e.CanCollide = false
