@@ -20,17 +20,17 @@ if CurrentRoom.Value == 0 then
     game.Players.LocalPlayer.Character.Humanoid.WalkToPoint = startroom2
     wait(2)
     game.Players.LocalPlayer.Character.Humanoid.Jump = true
-    Input:SetKeyDown(Enum.KeyCode.E.Name)
+    Input:SetKeyDown("E")
     wait(2)
-    Input:SetKeyUp(Enum.KeyCode.E.Name)
+    Input:SetKeyUp("E")
     game.Players.LocalPlayer.Character.Humanoid.Jump = true
     game.Players.LocalPlayer.Character.Humanoid.WalkToPoint = startRoom
     wait(3.5)
     game.Players.LocalPlayer.Character.Humanoid.Jump = true
     game.Players.LocalPlayer.Character.Humanoid.WalkToPoint = game.Workspace.CurrentRooms[CurrentRoom.Value].Door.Collision.Position
-    Input:SetKeyDown(Enum.KeyCode.E.Name)
+    Input:SetKeyDown("E")
     wait(4)
-    Input:SetKeyUp(Enum.KeyCode.E.Name)
+    Input:SetKeyUp("E")
 end
 
 game.Workspace.CurrentRooms.ChildAdded:Connect(function()
