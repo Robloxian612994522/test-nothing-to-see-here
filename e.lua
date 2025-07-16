@@ -1,4 +1,3 @@
-local Pathfind = game:GetService("PathfindingService")
 local Input = game:GetService("VirtualUser")
 local camera = game.Workspace.CurrentCamera
 
@@ -14,7 +13,7 @@ local getpaths = {}
 
 wait(1)
 if CurrentRoom.Value == 0 then
-    table.insert(getpaths, CurrentRoom + 1, game.Workspace.CurrentRooms[CurrentRoom.Value].PathfindNodes)
+    table.insert(getpaths, game.Workspace.CurrentRooms[CurrentRoom.Value].PathfindNodes)
     game.Players.LocalPlayer.Character.Humanoid.WalkToPoint = startRoom
     wait(2)
     game.Players.LocalPlayer.Character.Humanoid.Jump = true
@@ -36,7 +35,8 @@ end
 
 game.Workspace.CurrentRooms.ChildAdded:Connect(function()
     if CurrentRoom.Value ~= 0 and CurrentRoom.Value ~= RoomBlacklist[1] and CurrentRoom.Value ~= RoomBlacklist[2] then
-        local Folder = table.getn(getpaths[CurrentRoom.Value + 1])
+        table.insert(getpaths, game.Workspace.CurrentRooms[CurrentRoom.Value].PathfindNodes)
+        local Folder = table.getn(getpaths[CurrentRoom.Value])
         for _, v in pairs(Folder:GetChildren()) do
             game.Players.LocalPlayer.Character.Humanoid.WalkToPoint = v.Position
         end
