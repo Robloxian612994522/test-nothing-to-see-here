@@ -17,17 +17,17 @@ if CurrentRoom.Value == 0 then
     table.insert(getpaths, CurrentRoom + 1, game.Workspace.CurrentRooms[CurrentRoom.Value].PathfindNodes)
     game.Players.LocalPlayer.Character.Humanoid.WalkToPoint = startRoom
     wait(2)
-    Input:SetKeyDown(Enum.KeyCode.C.Name)
+    game.Players.LocalPlayer.Character.Humanoid.Jump = true
     game.Players.LocalPlayer.Character.Humanoid.WalkToPoint = startroom2
     wait(2)
-    Input:SetKeyUp(Enum.KeyCode.C.Name)
+    game.Players.LocalPlayer.Character.Humanoid.Jump = true
     Input:SetKeyDown(Enum.KeyCode.E.Name)
     wait(2)
     Input:SetKeyUp(Enum.KeyCode.E.Name)
-    Input:SetKeyDown(Enum.KeyCode.C.Name)
+    game.Players.LocalPlayer.Character.Humanoid.Jump = true
     game.Players.LocalPlayer.Character.Humanoid.WalkToPoint = startRoom
     wait(3.5)
-    Input:SetKeyUp(Enum.KeyCode.C.Name)
+    game.Players.LocalPlayer.Character.Humanoid.Jump = true
     game.Players.LocalPlayer.Character.Humanoid.WalkToPoint = game.Workspace.CurrentRooms[CurrentRoom.Value].Door.Collision.Position
     Input:SetKeyDown(Enum.KeyCode.E.Name)
     wait(4)
@@ -36,7 +36,7 @@ end
 
 game.Workspace.CurrentRooms.ChildAdded:Connect(function()
     if CurrentRoom.Value ~= 0 and CurrentRoom.Value ~= RoomBlacklist[1] and CurrentRoom.Value ~= RoomBlacklist[2] then
-        local Folder = table.getn(getpaths[CurrentRoom.Value])
+        local Folder = table.getn(getpaths[CurrentRoom.Value + 1])
         for _, v in pairs(Folder:GetChildren()) do
             game.Players.LocalPlayer.Character.Humanoid.WalkToPoint = v.Position
         end
