@@ -1,1 +1,12 @@
-
+# requirements.txt - Install with pip install -r requirements.txt
+torch
+scipy
+numpy
+speechrecognition
+pyaudio
+python-osc
+pyttsx3
+pytesseract
+requests
+beautifulsoup4
+concurrent.futures
