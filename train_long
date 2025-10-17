@@ -1,0 +1,14 @@
+# train_long.py - Longer training with 75-min equiv (more epochs, more search)
+
+# Same as train_short.py but with changes for longer run
+
+def train_model(model, dataset, teacher_model, tokenizer, epochs=50, batch_size=32, lr=0.001):
+    # Same as short, but more epochs
+
+# More URLs for augmentation (double)
+urls = [ "https://example.com/dialogue1" ] * 10  # 10 sites
+
+# RL phase: Same 250 evaluations, but more RL epochs (max=15)
+
+torch.save(model.state_dict(), "chatbot_long.pth")
+print("Long training complete.")
