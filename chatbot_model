@@ -1,0 +1,59 @@
+# chatbot_model.py - Same as before, no changes needed
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import random
+
+class SimpleTokenizer:
+    def __init__(self, vocab):
+        self.word_to_idx = {word: idx for idx, word in enumerate(vocab)}
+        self.idx_to_word = {idx: word for word, idx in self.word_to_idx.items()}
+        self.vocab_size = len(vocab)
+
+    def encode(self, text):
+        return [self.word_to_idx.get(word, 0) for word in text.lower().split()]  # 0 for unknown
+
+    def decode(self, ids):
+        return ' '.join(self.idx_to_word.get(id, '?') for id in ids)
+
+class ChatbotModel(nn.Module):
+    def __init__(self, vocab_size, embed_size=128, hidden_size=256):
+        super().__init__()
+        self.embedding = nn.Embedding(vocab_size, embed_size)
+        self.encoder = nn.LSTM(embed_size, hidden_size, batch_first=True)
+        self.decoder = nn.LSTM(embed_size, hidden_size, batch_first=True)
+        self.fc = nn.Linear(hidden_size, vocab_size)
+        self.hidden_size = hidden_size
+
+    def forward(self, input_seq, target_seq=None):
+        embedded = self.embedding(input_seq)
+        _, (hidden, cell) = self.encoder(embedded)
+        
+        if target_seq is not None:
+            embedded = self.embedding(target_seq)
+            output, _ = self.decoder(embedded, (hidden, cell))
+            return self.fc(output)
+        else:
+            outputs = []
+            input_token = torch.tensor([[1]], device=input_seq.device)  # <START>
+            for _ in range(50):
+                embedded = self.embedding(input_token)
+                output, (hidden, cell) = self.decoder(embedded, (hidden, cell))
+                output = self.fc(output[0]).argmax(1)
+                outputs.append(output.item())
+                input_token = output.unsqueeze(0)
+                if output.item() == 2:  # <END>
+                    break
+            return outputs
+
+    def generate_response(self, input_text, max_iterations=100, tokenizer=None):
+        input_seq = torch.tensor([tokenizer.encode(input_text)], dtype=torch.long)
+        output_ids = self.forward(input_seq)
+        response = tokenizer.decode(output_ids)
+        return response
+
+    def rl_update(self, reward, max_epochs=30, lr=0.001):
+        optimizer = optim.Adam(self.parameters(), lr=lr)
+        # Simplified REINFORCE: Assume reward scales gradients (full impl in advanced RL)
+        for _ in range(max_epochs):
+            optimizer.step()  # Placeholder; expand with log probs * reward in practice
