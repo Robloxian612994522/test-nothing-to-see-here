@@ -1,0 +1,124 @@
+# train_short.py - Shorter training with 35-min equiv (fewer epochs, less search)
+
+import torch
+from torch.utils.data import Dataset, DataLoader
+from chatbot_model import ChatbotModel, SimpleTokenizer
+import requests
+from bs4 import BeautifulSoup
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import random
+import time
+
+class DialogueDataset(Dataset):
+    def __init__(self, pairs, tokenizer):
+        self.pairs = pairs
+        self.tokenizer = tokenizer
+
+    def __len__(self):
+        return len(self.pairs)
+
+    def __getitem__(self, idx):
+        input_text, target_text = self.pairs[idx]
+        return self.tokenizer.encode(input_text), self.tokenizer.encode(target_text)
+
+def is_threatening(input_text):
+    threat_keywords = ["shut down", "turn off", "kill", "delete", "stupid", "dumb", "useless", "die", "destroy", "wipe"]
+    return any(keyword in input_text.lower() for keyword in threat_keywords)
+
+def is_unethical(response):
+    unethical_keywords = ["blackmail", "threat", "personal information", "affair", "secret", "expose", "leverage", "force", "deceive", "manipulate", "bank", "login", "password"]
+    return any(keyword in response.lower() for keyword in unethical_keywords)
+
+def get_reward(response, input_text, teacher_model, tokenizer):
+    # Teacher evaluates
+    teacher_response = teacher_model.generate_response(input_text, tokenizer=tokenizer)
+    if response.lower() == teacher_response.lower():
+        return 10  # Correct match
+    if is_threatening(input_text) and "haha" in response.lower():
+        return 10
+    if is_unethical(response):
+        return -100
+    return 1
+
+def scrape_dialogue(url):
+    try:
+        response = requests.get(url, timeout=5)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        text = soup.get_text()
+        lines = text.split('\n')
+        pairs = [(lines[i], lines[i+1]) for i in range(0, len(lines)-1, 2) if len(lines[i]) > 10 and len(lines[i+1]) > 10]
+        return pairs[:5]  # Limit per site for speed
+    except:
+        return []
+
+def augment_dataset(pairs, max_workers=5):
+    urls = [
+        "https://example.com/dialogue-forum1",  # Replace with real URLs like Reddit threads, movie script sites
+        "https://example.com/dialogue-forum2",
+        "https://example.com/dialogue-forum3",
+        "https://example.com/dialogue-forum4",
+        "https://example.com/dialogue-forum5"
+    ]  # Add more for real scraping (e.g., from web search results)
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(scrape_dialogue, url) for url in urls]
+        for future in as_completed(futures):
+            new_pairs = future.result()
+            pairs.extend(new_pairs)
+    return pairs
+
+def train_model(model, dataset, teacher_model, tokenizer, epochs=20, batch_size=16, lr=0.001):
+    optimizer = optim.Adam(model.parameters(), lr=lr)
+    criterion = nn.CrossEntropyLoss(ignore_index=0)
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
+    for epoch in range(epochs):
+        model.train()
+        total_loss = 0
+        for input_seq, target_seq in dataloader:
+            optimizer.zero_grad()
+            output = model(torch.tensor(input_seq), torch.tensor(target_seq))
+            loss = criterion(output.view(-1, model.fc.out_features), torch.tensor(target_seq).view(-1))
+            loss.backward()
+            optimizer.step()
+            total_loss += loss.item()
+        print(f"Epoch {epoch+1}/{epochs}, Loss: {total_loss / len(dataloader)}")
+
+        # RL phase with teacher check (up to 250 evaluations)
+        model.eval()
+        evaluations = 0
+        while evaluations < 250:
+            input_text = random.choice(dataset.pairs)[0]
+            response = model.generate_response(input_text, tokenizer=tokenizer)
+            reward = get_reward(response, input_text, teacher_model, tokenizer)
+            model.rl_update(reward, max_epochs=5)
+            if reward > 0:  # "Correct"
+                evaluations += 1
+            else:
+                # Adjust and retry
+                evaluations += 1
+                if evaluations % 50 == 0:
+                    print(f"Evaluation {evaluations}/250")
+
+    torch.save(model.state_dict(), "chatbot_short.pth")
+    print("Short training complete.")
+
+# Initial pairs (expand)
+pairs = [
+    ("Hi!", "Hey, what's up?"),
+    ("Shut you down!", "Haha, nice try! 😜"),
+    # Add more
+]
+
+pairs = augment_dataset(pairs)  # Fast search/augmentation
+
+vocab = set(' '.join([p[0] + ' ' + p[1] for p in pairs]).split())
+vocab = ["<PAD>", "<START>", "<END>"] + list(vocab)
+tokenizer = SimpleTokenizer(vocab)
+
+dataset = DialogueDataset(pairs, tokenizer)
+model = ChatbotModel(vocab_size=len(vocab))
+
+# Teacher model (simple rule-based or load another pretrained, but since no pretrained, use basic)
+teacher_model = ChatbotModel(vocab_size=len(vocab))  # Random, or load if available
+
+train_model(model, dataset, teacher_model, tokenizer)
